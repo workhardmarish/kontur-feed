@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Парсер YML-фида kontur.ru → products.json
-Запускается GitHub Actions каждый день в 9:00 МСК
 """
 
 import json
@@ -9,34 +8,69 @@ import xml.etree.ElementTree as ET
 import requests
 import os
 import re
+import time
+import random
 
 FEED_URL = 'https://kontur.ru/products/yml.xml'
 OUTPUT_PATH = 'public/products.json'
 
-# Маппинг id товара → данные для конфигуратора KStore
-# Заполните когда получите ID тарифов от разработчика
-KASSA_TARIFFS = {
-    # Имя категории или vendorCode → тариф KStore
-    'km_modulecashbox_mspos_f20_f': ['mspos', 'f20'],   # MSPOS-F20
-    'km_pos':     ['mspos-t', 'optima', 'payor', 'edpos', 'pos'],
-    'km_printer': ['27ф', '30ф', 'атол 2', 'атол 3'],
-}
+# Разные User-Agent чтобы не блокировали
+USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+]
 
-KASSA_HAS_FN = {
-    'km_modulecashbox_mspos_f20_f': True,
-    'km_pos':     False,
-    'km_printer': True,
-}
+def fetch_feed(url, max_retries=5):
+    """Скачиваем фид с повторными попытками"""
+    for attempt in range(max_retries):
+        try:
+            ua = random.choice(USER_AGENTS)
+            headers = {
+                'User-Agent': ua,
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+                'Cache-Control': 'max-age=0',
+            }
 
-# Категории которые считаются кассами (нужен конфигуратор)
-KASSA_CAT_SLUGS = ['kasses', 'kits']
+            session = requests.Session()
+            # Сначала заходим на главную чтобы получить cookies
+            if attempt == 0:
+                print("Getting cookies from main page...")
+                try:
+                    session.get('https://kontur.ru/', headers=headers, timeout=15)
+                    time.sleep(2)
+                except:
+                    pass
+
+            print(f"Attempt {attempt+1}/{max_retries}: fetching {url}")
+            resp = session.get(url, headers=headers, timeout=60)
+            resp.raise_for_status()
+            print(f"Success! Content length: {len(resp.content)} bytes")
+            return resp.content
+
+        except Exception as e:
+            print(f"Attempt {attempt+1} failed: {e}")
+            if attempt < max_retries - 1:
+                wait = (attempt + 1) * 10 + random.randint(1, 10)
+                print(f"Waiting {wait} seconds before retry...")
+                time.sleep(wait)
+
+    raise Exception(f"Failed to fetch feed after {max_retries} attempts")
 
 def guess_tariff(name, vendor_code=''):
     """Определяем тариф KStore по названию товара"""
     name_lower = (name + ' ' + vendor_code).lower()
-    if 'f20' in name_lower or 'mspos-f20' in name_lower:
+    if 'f20' in name_lower or 'mspos-f20' in name_lower or 'mspos_f20' in name_lower:
         return 'km_modulecashbox_mspos_f20_f', True
-    if 'принтер' in name_lower or '27ф' in name_lower or '30ф' in name_lower or 'atol' in name_lower:
+    if '27ф' in name_lower or 'atol 27' in name_lower or 'атол 27' in name_lower:
+        return 'km_printer', True
+    if '30ф' in name_lower or 'atol 30' in name_lower or 'атол 30' in name_lower:
+        return 'km_printer', True
+    if 'принтер' in name_lower and ('фискальн' in name_lower or 'касс' in name_lower):
         return 'km_printer', True
     if 'pos' in name_lower or 'терминал' in name_lower or 'optima' in name_lower:
         return 'km_pos', False
@@ -47,13 +81,13 @@ def guess_tariff(name, vendor_code=''):
 def guess_cat_slug(category_name):
     """Определяем slug категории"""
     cat = category_name.lower()
-    if any(w in cat for w in ['касс', 'pos', 'терминал', 'регистратор']):
+    if any(w in cat for w in ['касс', 'pos', 'терминал', 'регистратор', 'фискальн']):
         return 'kasses'
     if any(w in cat for w in ['комплект', 'набор']):
         return 'kits'
-    if any(w in cat for w in ['фискальн', 'накопитель', 'фн']):
+    if any(w in cat for w in ['накопитель', 'фн']):
         return 'fn'
-    if any(w in cat for w in ['офд', 'оператор']):
+    if any(w in cat for w in ['офд', 'оператор фискальн']):
         return 'ofd'
     if any(w in cat for w in ['диадок', 'эдо', 'документ']):
         return 'edo'
@@ -62,67 +96,51 @@ def guess_cat_slug(category_name):
     return 'other'
 
 def parse_feed():
-    print(f"Fetching feed from {FEED_URL}...")
-    
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (compatible; GitHubActions/1.0)',
-        'Accept': 'application/xml,text/xml,*/*',
-    }
-    
-    resp = requests.get(FEED_URL, headers=headers, timeout=30)
-    resp.raise_for_status()
-    print(f"Feed fetched: {len(resp.content)} bytes")
-    
-    root = ET.fromstring(resp.content)
+    content = fetch_feed(FEED_URL)
+    root = ET.fromstring(content)
     shop = root.find('shop')
-    
+
     # Парсим категории
     categories = {}
-    for cat in shop.find('categories').findall('category'):
-        categories[cat.get('id')] = cat.text or ''
+    cats_el = shop.find('categories')
+    if cats_el is not None:
+        for cat in cats_el.findall('category'):
+            categories[cat.get('id')] = cat.text or ''
     print(f"Categories: {len(categories)}")
-    
+
     # Парсим товары
     products = []
-    for offer in shop.find('offers').findall('offer'):
-        pid = offer.get('id', '')
-        name = offer.findtext('name', '')
-        price = offer.findtext('price', '0')
-        cat_id = offer.findtext('categoryId', '')
+    offers_el = shop.find('offers')
+    if offers_el is None:
+        raise Exception("No <offers> element found in feed")
+
+    for offer in offers_el.findall('offer'):
+        pid      = offer.get('id', '')
+        name     = offer.findtext('name', '')
+        price    = offer.findtext('price', '0')
+        old_price = offer.findtext('oldprice', '')
+        cat_id   = offer.findtext('categoryId', '')
         cat_name = categories.get(cat_id, '')
-        url = offer.findtext('url', '')
+        url      = offer.findtext('url', '')
         vendor_code = offer.findtext('vendorCode', offer.get('vendorCode', ''))
         description = offer.findtext('description', '')
-        
-        # Картинки
+
         pictures = [p.text for p in offer.findall('picture') if p.text]
-        
-        # Параметры
-        params = []
-        for param in offer.findall('param'):
-            params.append({
-                'name': param.get('name', ''),
-                'value': param.text or ''
-            })
-        
-        # Старая цена
-        old_price = offer.findtext('oldprice', '')
-        
-        # Определяем slug и тип
+        params = [{'name': p.get('name',''), 'value': p.text or ''} for p in offer.findall('param')]
+
         cat_slug = guess_cat_slug(cat_name)
-        is_kassa = cat_slug in KASSA_CAT_SLUGS
-        is_kit = cat_slug == 'kits'
-        
+        is_kassa = cat_slug in ('kasses', 'kits')
+        is_kit   = cat_slug == 'kits'
+
         kassa_tariff, has_fn = guess_tariff(name, vendor_code)
         if not is_kassa:
-            kassa_tariff = ''
-            has_fn = False
-        
-        # URL страницы в Tilda (генерируем из vendorCode или id)
-        slug = vendor_code.lower().replace(' ', '-').replace('/', '-') if vendor_code else f'product-{pid}'
-        slug = re.sub(r'[^a-z0-9\-]', '', slug)
+            kassa_tariff, has_fn = '', False
+
+        # Slug для URL в Tilda
+        slug = vendor_code.lower().replace(' ', '-').replace('/', '-') if vendor_code else ''
+        slug = re.sub(r'[^a-z0-9\-]', '', slug).strip('-')
         tilda_url = '/' + slug if slug else f'/product-{pid}'
-        
+
         products.append({
             'id': pid,
             'name': name,
@@ -131,7 +149,7 @@ def parse_feed():
             'cat': cat_name,
             'catSlug': cat_slug,
             'img': pictures[0] if pictures else '',
-            'imgs': pictures,
+            'imgs': pictures[:4],
             'desc': description[:200] if description else '',
             'fullDesc': description,
             'params': params,
@@ -143,32 +161,34 @@ def parse_feed():
             'hasFn': has_fn,
             'kassaTariff': kassa_tariff,
         })
-    
+
     print(f"Products parsed: {len(products)}")
     return products
 
 def main():
     products = parse_feed()
-    
-    # Сортируем: кассы первыми
+
     order = ['kasses', 'kits', 'fn', 'ofd', 'edo', 'periphery', 'other']
-    products.sort(key=lambda p: (order.index(p['catSlug']) if p['catSlug'] in order else 99, p['name']))
-    
+    products.sort(key=lambda p: (
+        order.index(p['catSlug']) if p['catSlug'] in order else 99,
+        p['name']
+    ))
+
     os.makedirs('public', exist_ok=True)
-    
+
+    import datetime
     output = {
-        'updated': __import__('datetime').datetime.utcnow().isoformat() + 'Z',
+        'updated': datetime.datetime.utcnow().isoformat() + 'Z',
         'count': len(products),
         'products': products
     }
-    
+
     with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
-    
-    print(f"Saved to {OUTPUT_PATH}: {len(products)} products")
-    
-    # Покажем первые 3 товара для проверки
-    for p in products[:3]:
+
+    print(f"\nSaved {len(products)} products to {OUTPUT_PATH}")
+    print("\nFirst 5 products:")
+    for p in products[:5]:
         print(f"  [{p['catSlug']}] {p['name']} — {p['price']} ₽")
 
 if __name__ == '__main__':
