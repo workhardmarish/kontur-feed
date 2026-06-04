@@ -281,6 +281,7 @@ button{font-family:inherit;cursor:pointer}
 var P_ID=4;var P_PRICE=22570.0;var P_NAME='Мобильная касса MSPOS‑F20‑Ф';
 var IS_KASSA=true;var IS_KIT=false;
 var HAS_FN=true;var TARIFF='km_modulecashbox_mspos_f20_f';
+var HW_PARAM='';var ONLINE_SALE=true;
 function openTab(btn,id){document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('on')});document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('on')});btn.classList.add('on');document.getElementById(id).classList.add('on')}
 
 var CFG={industry:'retail',tier:'optimal',soft:{val:'3',price:3990},fn:{val:'36',price:23100},ofd:{val:'15',price:5300}};
@@ -324,6 +325,11 @@ function cfgRecalc(){
   if(tv)tv.textContent='от '+fmt(total);
 }
 function cfgBuy(){
+  if(!ONLINE_SALE){
+    /* EdPOS и PayTor — только заявка на менеджера */
+    window.location.href='tel:88005002244';
+    return;
+  }
   var c=getCart();
   function add(id,nm,pr){var i=c.findIndex(function(x){return String(x.id)===String(id)});if(i>=0){c[i].qty++}else{c.push({id:id,name:nm,price:pr,qty:1})}}
   add(P_ID,P_NAME,P_PRICE);
@@ -332,7 +338,19 @@ function cfgBuy(){
   add(CFG.ofd.val==='13'?20:CFG.ofd.val==='15'?21:22,'ОФД '+CFG.ofd.val+' мес.',CFG.ofd.price);
   saveCart(c);
   var st=(SM[CFG.industry]||{})[CFG.tier]||'optimal_retail';
-  localStorage.setItem('kontur_kstore_url','https://online-sales.kontur.ru/sale?tariffs='+TARIFF+','+st+',km_ofd'+(HAS_FN?'&'+TARIFF+'.Fn='+CFG.fn.val:'')+'&'+st+'.months='+CFG.soft.val+'&km_ofd.months='+CFG.ofd.val+'&backurl='+encodeURIComponent(window.location.href));
+  /* Формируем тарифы:
+     ФН = всегда ofd_kontur_fn (отдельный тариф), months=15 или 36
+     km_printer: доп параметр Hardware.Printer
+     km_modulecashbox: доп параметр Fn (число) */
+  var tariffList = TARIFF+','+st+',km_ofd'+(HAS_FN&&!IS_KIT?',ofd_kontur_fn':'');
+  var params = '';
+  if(HW_PARAM) params += '&'+TARIFF+'.Hardware.Printer='+HW_PARAM;
+  if(TARIFF==='km_modulecashbox_mspos_f20_f'&&HAS_FN&&!IS_KIT) params += '&'+TARIFF+'.Fn='+CFG.fn.val;
+  params += '&'+st+'.months='+CFG.soft.val;
+  params += '&km_ofd.months='+CFG.ofd.val;
+  if(HAS_FN&&!IS_KIT) params += '&ofd_kontur_fn.months='+CFG.fn.val;
+  params += '&backurl='+encodeURIComponent(window.location.href);
+  localStorage.setItem('kontur_kstore_url','https://online-sales.kontur.ru/sale?tariffs='+tariffList+params);
   updateBadge();showToast('Комплект добавлен в корзину');
   var btn=document.getElementById('btn-buy');
   if(btn){btn.style.background='var(--mint)';btn.textContent='✓ Добавлено!';setTimeout(function(){btn.style.background='';btn.innerHTML='🛒 В корзину'},2000)}
