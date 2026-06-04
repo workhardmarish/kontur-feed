@@ -558,8 +558,8 @@ def build_product(p, all_products, updated):
   </div>
 </div>'''
 
-    online_sale = p.get('onlineSale', kassa_cfg[5] if len(kassa_cfg) > 5 else True)
-    hw_param    = p.get('hwParam', kassa_cfg[4] if len(kassa_cfg) > 4 else '')
+    online_sale = p.get('onlineSale', True)
+    hw_param    = p.get('hwParam', '')
     buy_click   = 'cfgBuy()' if is_kassa else f"addToCart('{pid}','{p['name'].replace(chr(39),chr(92)+chr(39))}',{p['price']})"
     buy_label   = 'Получить консультацию' if not online_sale else 'В корзину'
     js_vars = f'''var P_ID={pid};var P_PRICE={p['price']};var P_NAME='{p['name'].replace(chr(39),chr(92)+chr(39))}';
