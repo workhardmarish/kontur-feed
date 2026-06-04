@@ -16,19 +16,21 @@ OUTPUT_DIR = 'docs'
 # Маппинг id → тариф KStore и URL страницы
 # ──────────────────────────────────────────
 KASSA_CFG = {
-    # id: (tariff, hasFn, isKit, pageSlug)
-    4:  ('km_modulecashbox_mspos_f20_f', True,  False, 'mspos-f20'),
-    5:  ('km_pos',     False, False, 'mspos-t'),
-    6:  ('km_printer', True,  False, 'atol-27f'),
-    7:  ('km_printer', True,  False, 'atol-30f'),
-    8:  ('km_pos',     False, False, 'atol-optima'),
-    9:  ('km_pos',     False, False, 'paytor-jay-pro'),
-    10: ('km_pos',     False, False, 'edpos'),
-    11: ('km_pos',     False, True,  'kit-nadezhnyj'),
-    12: ('km_pos',     False, True,  'kit-udobnyj'),
-    13: ('km_pos',     False, True,  'kit-bystryj'),
-    14: ('km_modulecashbox_mspos_f20_f', True, True, 'kit-mobilnyj'),
-    15: ('km_printer', True,  True,  'kit-vygodnyj'),
+    # id: (tariff, hasFn, isKit, slug, hwParam, onlineSale)
+    # hwParam  — Hardware.Printer для km_printer, '' для остальных
+    # onlineSale — False если только заявка на менеджера
+    4:  ('km_modulecashbox_mspos_f20_f', True,  False, 'mspos-f20',     '',          True),
+    5:  ('km_pos',                       False, False, 'mspos-t',        '',          True),
+    6:  ('km_printer',                   True,  False, 'atol-27f',       'printer27f', True),
+    7:  ('km_printer',                   True,  False, 'atol-30f',       'fr30f',     True),
+    8:  ('km_pos',                       False, False, 'atol-optima',    '',          True),
+    9:  ('km_pos',                       False, False, 'paytor-jay-pro', '',          False),  # только заявка
+    10: ('km_pos',                       False, False, 'edpos',          '',          False),  # только заявка
+    11: ('km_pos',                       False, True,  'kit-nadezhnyj',  '',          True),
+    12: ('km_pos',                       False, True,  'kit-udobnyj',    '',          True),
+    13: ('km_pos',                       False, True,  'kit-bystryj',    '',          True),
+    14: ('km_modulecashbox_mspos_f20_f', True,  True,  'kit-mobilnyj',   '',          True),
+    15: ('km_printer',                   True,  True,  'kit-vygodnyj',   'fr30f',     True),
 }
 
 PAGE_SLUGS = {
@@ -109,7 +111,7 @@ def parse(content):
         params   = [{'name': p.get('name',''), 'value': p.text or ''} for p in o.findall('param')]
         cat_slug = guess_cat_slug(cat_name)
         slug     = PAGE_SLUGS.get(pid, f'product-{pid}')
-        kassa_cfg = KASSA_CFG.get(pid, ('', False, False, slug))
+        kassa_cfg = KASSA_CFG.get(pid, ('', False, False, slug, '', True))
         products.append({
             'id': pid, 'name': name, 'price': price, 'oldPrice': oldprice,
             'cat': cat_name, 'catSlug': cat_slug,
@@ -120,6 +122,8 @@ def parse(content):
             'hasFn': kassa_cfg[1],
             'isKit': kassa_cfg[2],
             'isKassa': pid in KASSA_CFG,
+            'hwParam': kassa_cfg[4] if len(kassa_cfg) > 4 else '',
+            'onlineSale': kassa_cfg[5] if len(kassa_cfg) > 5 else True,
         })
     return products
 
@@ -554,11 +558,14 @@ def build_product(p, all_products, updated):
   </div>
 </div>'''
 
-    buy_click = 'cfgBuy()' if is_kassa else f"addToCart('{pid}','{p['name'].replace(chr(39),chr(92)+chr(39))}',{p['price']})"
-
+    online_sale = p.get('onlineSale', kassa_cfg[5] if len(kassa_cfg) > 5 else True)
+    hw_param    = p.get('hwParam', kassa_cfg[4] if len(kassa_cfg) > 4 else '')
+    buy_click   = 'cfgBuy()' if is_kassa else f"addToCart('{pid}','{p['name'].replace(chr(39),chr(92)+chr(39))}',{p['price']})"
+    buy_label   = 'Получить консультацию' if not online_sale else 'В корзину'
     js_vars = f'''var P_ID={pid};var P_PRICE={p['price']};var P_NAME='{p['name'].replace(chr(39),chr(92)+chr(39))}';
 var IS_KASSA={'true' if is_kassa else 'false'};var IS_KIT={'true' if is_kit else 'false'};
-var HAS_FN={'true' if has_fn else 'false'};var TARIFF='{tariff}';'''
+var HAS_FN={'true' if has_fn else 'false'};var TARIFF='{tariff}';
+var HW_PARAM='{hw_param}';var ONLINE_SALE={'true' if online_sale else 'false'};'''
 
     cfg_js = '''
 var CFG={industry:'retail',tier:'optimal',soft:{val:'3',price:3990},fn:{val:'36',price:23100},ofd:{val:'15',price:5300}};
@@ -602,6 +609,11 @@ function cfgRecalc(){
   if(tv)tv.textContent='от '+fmt(total);
 }
 function cfgBuy(){
+  if(!ONLINE_SALE){
+    /* EdPOS и PayTor — только заявка на менеджера */
+    window.location.href='tel:88005002244';
+    return;
+  }
   var c=getCart();
   function add(id,nm,pr){var i=c.findIndex(function(x){return String(x.id)===String(id)});if(i>=0){c[i].qty++}else{c.push({id:id,name:nm,price:pr,qty:1})}}
   add(P_ID,P_NAME,P_PRICE);
@@ -610,7 +622,19 @@ function cfgBuy(){
   add(CFG.ofd.val==='13'?20:CFG.ofd.val==='15'?21:22,'ОФД '+CFG.ofd.val+' мес.',CFG.ofd.price);
   saveCart(c);
   var st=(SM[CFG.industry]||{})[CFG.tier]||'optimal_retail';
-  localStorage.setItem('kontur_kstore_url','https://online-sales.kontur.ru/sale?tariffs='+TARIFF+','+st+',km_ofd'+(HAS_FN?'&'+TARIFF+'.Fn='+CFG.fn.val:'')+'&'+st+'.months='+CFG.soft.val+'&km_ofd.months='+CFG.ofd.val+'&backurl='+encodeURIComponent(window.location.href));
+  /* Формируем тарифы:
+     ФН = всегда ofd_kontur_fn (отдельный тариф), months=15 или 36
+     km_printer: доп параметр Hardware.Printer
+     km_modulecashbox: доп параметр Fn (число) */
+  var tariffList = TARIFF+','+st+',km_ofd'+(HAS_FN&&!IS_KIT?',ofd_kontur_fn':'');
+  var params = '';
+  if(HW_PARAM) params += '&'+TARIFF+'.Hardware.Printer='+HW_PARAM;
+  if(TARIFF==='km_modulecashbox_mspos_f20_f'&&HAS_FN&&!IS_KIT) params += '&'+TARIFF+'.Fn='+CFG.fn.val;
+  params += '&'+st+'.months='+CFG.soft.val;
+  params += '&km_ofd.months='+CFG.ofd.val;
+  if(HAS_FN&&!IS_KIT) params += '&ofd_kontur_fn.months='+CFG.fn.val;
+  params += '&backurl='+encodeURIComponent(window.location.href);
+  localStorage.setItem('kontur_kstore_url','https://online-sales.kontur.ru/sale?tariffs='+tariffList+params);
   updateBadge();showToast('Комплект добавлен в корзину');
   var btn=document.getElementById('btn-buy');
   if(btn){btn.style.background='var(--mint)';btn.textContent='✓ Добавлено!';setTimeout(function(){btn.style.background='';btn.innerHTML='🛒 В корзину'},2000)}
@@ -712,7 +736,7 @@ cfgRecalc();''' if is_kassa else ''
       {cfg_html}
       <div class="kp-btns">
         <button id="btn-buy" onclick="{buy_click}">
-          {CART_SVG} В корзину
+          {CART_SVG} {buy_label}
         </button>
         <button class="btn-fav">♡</button>
       </div>
