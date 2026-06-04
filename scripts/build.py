@@ -230,15 +230,15 @@ def header(title='Контур — Кассы и торговля', desc=''):
   <div class="hdr-in">
     <a href="/" class="logo">Контур</a>
     <nav class="hdr-nav">
-      <a href="/#kasses">Кассы</a>
-      <a href="/#kits">Комплекты</a>
-      <a href="/#fn-ofd">ФН и ОФД</a>
-      <a href="/#edo">КЭП и ЭДО</a>
-      <a href="/#periphery">Периферия</a>
+      <a href="/kontur-feed/#kasses">Кассы</a>
+      <a href="/kontur-feed/#kits">Комплекты</a>
+      <a href="/kontur-feed/#fn-ofd">ФН и ОФД</a>
+      <a href="/kontur-feed/#edo">КЭП и ЭДО</a>
+      <a href="/kontur-feed/#periphery">Периферия</a>
     </nav>
     <div class="hdr-right">
       <div class="hdr-phone">8 800 500-22-44<small>Бесплатно по России</small></div>
-      <a href="/cart" class="cart-btn">
+      <a href="/kontur-feed/cart/" class="cart-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
         <span class="cart-badge" id="cart-badge">0</span>
       </a>
@@ -279,7 +279,7 @@ def build_index(products, updated):
         by_slug.setdefault(p['catSlug'], []).append(p)
 
     def pcard(p):
-        url = f"/{p['slug']}"
+        url = f"/kontur-feed/{p['slug']}/"
         price_html = f"<span class='old-price'>{fmt(p['oldPrice'])}</span> " if p['oldPrice'] > 0 else ''
         price_html += f"{fmt(p['price'])}"
         return f'''<div class="pcard">
@@ -299,7 +299,7 @@ def build_index(products, updated):
 </div>'''
 
     def kcard(p):
-        url = f"/{p['slug']}"
+        url = f"/kontur-feed/{p['slug']}/"
         return f'''<div class="kcard" onclick="location.href='{url}'">
   <div class="kcard-img"><img src="{p['img']}" alt="{p['name']}" loading="lazy"></div>
   <div class="kcard-body">
@@ -488,7 +488,7 @@ def build_product(p, all_products, updated):
     related = [x for x in all_products if x['id'] != pid and x['catSlug'] == p['catSlug']][:3]
     related_html = ''
     if related:
-        cards = ''.join(f'''<a href="/{r['slug']}" class="rel-card">
+        cards = ''.join(f'''<a href="/kontur-feed/{r['slug']}/" class="rel-card">
   <div class="rel-img"><img src="{r['img']}" alt="{r['name']}" loading="lazy"></div>
   <div class="rel-body">
     <div class="rel-cat">{r['cat']}</div>
@@ -830,7 +830,7 @@ def build_cart():
         <div class="empty-icon">🛒</div>
         <h2>Корзина пуста</h2>
         <p>Добавьте товары из каталога</p>
-        <button class="btn-go" onclick="location.href='/'">Перейти в каталог</button>
+        <button class="btn-go" onclick="location.href='/kontur-feed/'">Перейти в каталог</button>
       </div>
     </div>
     <div class="sidebar" id="cart-sidebar" style="display:none">
@@ -841,7 +841,7 @@ def build_cart():
         <div class="order-row"><span class="order-row-lbl">Доставка</span><span style="color:var(--mint)">Бесплатно</span></div>
         <div class="order-total"><span class="order-total-lbl">К оплате</span><span class="order-total-val" id="s-total">0 ₽</span></div>
         <button class="btn-checkout" id="btn-checkout">Оформить заказ →</button>
-        <button class="btn-continue" onclick="location.href='/'">Продолжить покупки</button>
+        <button class="btn-continue" onclick="location.href='/kontur-feed/'">Продолжить покупки</button>
         <div class="order-note">Нажимая «Оформить заказ», вы соглашаетесь с условиями публичной оферты</div>
       </div>
       <div class="trust-mini">
