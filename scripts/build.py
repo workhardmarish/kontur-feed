@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 import requests
 
 FEED_URL   = 'https://kontur.ru/products/yml.xml'
-OUTPUT_DIR = 'public'
+OUTPUT_DIR = 'docs'
 
 # ──────────────────────────────────────────
 # Маппинг id → тариф KStore и URL страницы
