@@ -961,19 +961,24 @@ def main():
         f.write(build_index(products, updated))
     print("Built: index.html")
 
-    # Корзина
-    with open(f'{OUTPUT_DIR}/cart.html', 'w', encoding='utf-8') as f:
+    # Корзина → /cart/index.html
+    cart_dir = f'{OUTPUT_DIR}/cart'
+    os.makedirs(cart_dir, exist_ok=True)
+    with open(f'{cart_dir}/index.html', 'w', encoding='utf-8') as f:
         f.write(build_cart())
-    print("Built: cart.html")
+    print("Built: cart/index.html")
 
     # Страницы товаров
     for p in products:
         slug = p['slug']
         html = build_product(p, products, updated)
-        path = f'{OUTPUT_DIR}/{slug}.html'
+        # Создаём папку slug/index.html — тогда URL будет /slug/ без .html
+        slug_dir = f'{OUTPUT_DIR}/{slug}'
+        os.makedirs(slug_dir, exist_ok=True)
+        path = f'{slug_dir}/index.html'
         with open(path, 'w', encoding='utf-8') as f:
             f.write(html)
-        print(f"Built: {slug}.html")
+        print(f"Built: {slug}/index.html")
 
     # 404
     with open(f'{OUTPUT_DIR}/404.html', 'w', encoding='utf-8') as f:
