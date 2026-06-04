@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>Кассовый комплект «Удобный» — Контур</title>
+<meta name="description" content="Готовое решение для продуктовой и непродуктовой розницы, точек общепита и сферы услуг. В комплект входят Касса MSPOS-T-Ф D3 mini с встроенным принтером чеков, учетная система с кассовым ПО, ОФД для передачи данных в ФНС.">
+
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#21212A;--white:#fff;--gray:#F4F4F4;--gray2:#EBEBEB;--muted:#7A7A8A;--orange:#FF6B35;--mint:#00C896;--blue:#3D7FFF;--border:rgba(33,33,42,.1)}
+body{font-family:'Onest','Helvetica Neue',Arial,sans-serif;background:#fff;color:var(--black);-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:9999;background:var(--black);border-bottom:1px solid rgba(255,255,255,.08)}
+.hdr-in{max-width:1280px;margin:0 auto;padding:0 32px;height:60px;display:flex;align-items:center;gap:24px}
+.logo{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.3px;flex-shrink:0}
+.hdr-nav{flex:1;display:flex;gap:4px}
+.hdr-nav a{font-size:14px;color:rgba(255,255,255,.55);padding:7px 14px;border-radius:8px;transition:.15s}
+.hdr-nav a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.hdr-phone{font-size:14px;font-weight:700;color:#fff;border-left:1px solid rgba(255,255,255,.1);padding-left:20px}
+.hdr-phone small{display:block;font-size:11px;font-weight:400;color:var(--orange)}
+.cart-btn{position:relative;width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;transition:.15s}
+.cart-btn:hover{background:rgba(255,255,255,.08)}
+.cart-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--orange);border-radius:20px;color:#fff;font-size:10px;font-weight:700;line-height:16px;text-align:center;display:none}
+.btn-ghost{height:36px;padding:0 16px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#fff;font-size:14px;font-weight:500;transition:.15s}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+
+/* FOOTER */
+.footer{background:var(--black);border-top:1px solid rgba(255,255,255,.08);margin-top:80px}
+.footer-in{max-width:1280px;margin:0 auto;padding:48px 32px 40px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+.footer-logo{font-size:17px;font-weight:700;color:#fff;margin-bottom:12px}
+.footer-desc{font-size:12px;color:rgba(255,255,255,.4);line-height:1.65;max-width:240px;margin-bottom:18px}
+.footer-addr{font-size:12px;color:rgba(255,255,255,.4);line-height:1.6;font-style:normal}
+.footer-addr strong{color:#fff;display:block;font-size:14px;font-weight:700;margin-bottom:3px}
+.fcol h5{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin:0 0 16px}
+.fcol a{display:block;font-size:12px;color:rgba(255,255,255,.4);margin-bottom:9px;transition:.15s}
+.fcol a:hover{color:#fff}
+.footer-bot{max-width:1280px;margin:0 auto;padding:18px 32px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.3)}
+.footer-docs{display:flex;gap:20px}.footer-docs a{color:rgba(255,255,255,.3)}
+.footer-docs a:hover{color:#fff}
+
+/* TOAST */
+.k-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--black);color:#fff;padding:11px 22px;border-radius:12px;font-size:14px;font-weight:500;z-index:99999;display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:opacity .3s;white-space:nowrap;border:1px solid rgba(255,255,255,.1)}
+.k-toast-ok{color:var(--mint);font-size:17px}
+
+@media(max-width:768px){
+  .hdr-in{padding:0 16px}
+  .hdr-nav,.hdr-phone,.btn-ghost{display:none}
+  .footer-in{grid-template-columns:1fr;padding:32px 16px}
+  .footer-bot{flex-direction:column;gap:8px;padding:16px;text-align:center}
+}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-in">
+    <a href="/" class="logo">Контур</a>
+    <nav class="hdr-nav">
+      <a href="/#kasses">Кассы</a>
+      <a href="/#kits">Комплекты</a>
+      <a href="/#fn-ofd">ФН и ОФД</a>
+      <a href="/#edo">КЭП и ЭДО</a>
+      <a href="/#periphery">Периферия</a>
+    </nav>
+    <div class="hdr-right">
+      <div class="hdr-phone">8 800 500-22-44<small>Бесплатно по России</small></div>
+      <a href="/cart" class="cart-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
+        <span class="cart-badge" id="cart-badge">0</span>
+      </a>
+      <button class="btn-ghost">Войти в сервис</button>
+    </div>
+  </div>
+</header>
+<div class="k-toast" id="k-toast"><span class="k-toast-ok">✓</span><span id="k-toast-txt"></span></div>
+<style>
+.kp-wrap{max-width:1280px;margin:0 auto;padding:32px 40px 64px}
+.bc{font-size:13px;color:var(--muted);margin-bottom:28px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bc a{color:var(--muted)}.bc a:hover{color:var(--black)}.bc-s{opacity:.4}
+.kp-grid{display:grid;grid-template-columns:1fr 460px;gap:56px;align-items:start}
+.kp-gal{position:sticky;top:76px}
+.kp-img{background:var(--gray);border-radius:18px;padding:36px;display:flex;align-items:center;justify-content:center;min-height:400px}
+.kp-img img{max-height:320px;width:auto}
+.kp-cat{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--orange);margin-bottom:10px}
+.kp-name{font-size:30px;font-weight:700;letter-spacing:-.8px;line-height:1.15;margin-bottom:14px}
+.kp-short{font-size:15px;color:var(--muted);line-height:1.65;margin-bottom:18px}
+.kp-pbox{background:var(--gray);border-radius:14px;padding:20px;margin-bottom:18px}
+.kp-price{font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:4px}
+.kp-price-old{font-size:14px;color:var(--muted);text-decoration:line-through;margin-bottom:4px}
+.kp-price-note{font-size:12px;color:var(--muted);margin-bottom:8px}
+.kp-avail{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500}
+.kp-dot{width:8px;height:8px;border-radius:50%;background:var(--mint);flex-shrink:0}
+.kp-upd{font-size:11px;color:var(--muted);margin-top:6px}
+.cfg{border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px;background:var(--gray)}
+.cfg-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--orange);margin-bottom:14px}
+.cfg-step{margin-bottom:14px}
+.cfg-ttl{font-size:13px;font-weight:700;margin-bottom:8px}
+.cfg-opts{display:flex;flex-wrap:wrap;gap:7px}
+.cfg-opt{padding:7px 13px;font-size:13px;font-weight:500;border:1.5px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:7px;color:var(--black)}
+.cfg-opt:hover{border-color:var(--orange)}.cfg-opt.on{border-color:var(--orange);background:rgba(255,107,53,.06);color:var(--orange);font-weight:700}
+.cfg-p{font-size:11px;font-weight:700;padding:2px 6px;background:var(--gray2);border-radius:5px;color:var(--muted)}
+.cfg-opt.on .cfg-p{background:rgba(255,107,53,.12);color:var(--orange)}
+.cfg-hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+.cfg-tot{border-top:1.5px solid var(--border);margin-top:14px;padding-top:12px}
+.cfg-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:4px}
+.cfg-row span:last-child{font-weight:500;color:var(--black)}
+.cfg-sum{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:10px;padding:11px 14px;border:1.5px solid var(--border);margin-top:10px}
+.cfg-sum-lbl{font-size:14px;font-weight:700}.cfg-sum-val{font-size:22px;font-weight:700;color:var(--orange)}
+.cfg-note{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.5}
+.kp-btns{display:flex;gap:10px;margin-bottom:10px}
+#btn-buy{flex:1;padding:14px;font-size:15px;font-weight:700;background:var(--black);color:#fff;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+#btn-buy:hover{opacity:.82}
+.btn-fav{width:50px;height:50px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:.15s}
+.btn-fav:hover{color:var(--orange);border-color:var(--orange)}
+.btn-consult{width:100%;padding:12px;font-size:14px;font-weight:500;background:transparent;color:var(--black);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:.15s}
+.btn-consult:hover{background:var(--gray2)}
+.kp-meta{display:flex;flex-direction:column;gap:9px;margin:14px 0}
+.kp-mi{display:flex;align-items:flex-start;gap:9px;font-size:13px}
+.kp-mi-ic{font-size:15px;flex-shrink:0}.kp-mi-tx{color:var(--muted);line-height:1.5}.kp-mi-tx strong{color:var(--black)}
+.kp-tabs{margin-top:36px;border-top:1px solid var(--border)}
+.tabs-nav{display:flex;border-bottom:1px solid var(--border)}
+.tab-btn{padding:12px 16px;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none}
+.tab-btn.on{color:var(--black);border-bottom-color:var(--orange);font-weight:700}
+.tab-pane{display:none;padding:20px 0}.tab-pane.on{display:block}
+.specs-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.specs-tbl tr{border-bottom:1px solid var(--border)}
+.specs-tbl td{padding:10px 0;vertical-align:top}
+.specs-tbl td:first-child{color:var(--muted);width:44%;padding-right:16px}
+.specs-tbl td:last-child{font-weight:500}
+.del-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.del-card{border:1.5px solid var(--border);border-radius:12px;padding:16px}
+.del-ic{font-size:20px;margin-bottom:7px}.del-nm{font-size:14px;font-weight:700;margin-bottom:4px}
+.del-ds{font-size:13px;color:var(--muted);line-height:1.5}.del-pr{font-size:13px;font-weight:700;color:var(--mint);margin-top:6px}
+.rel{padding:56px 0;border-top:1px solid var(--border)}
+.rel-title{font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:20px}
+.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.rel-card{border:1.5px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .2s;display:block}
+.rel-card:hover{border-color:var(--orange)}
+.rel-img{background:var(--gray);padding:20px;display:flex;align-items:center;justify-content:center;min-height:140px}
+.rel-img img{max-height:110px;width:auto}
+.rel-body{padding:14px}
+.rel-cat{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.rel-name{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:7px;color:var(--black)}
+.rel-price{font-size:16px;font-weight:700;margin-bottom:9px}
+.btn-rel{width:100%;padding:8px;font-size:12px;font-weight:700;background:var(--black);color:#fff;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
+.btn-rel:hover{opacity:.8}
+@media(max-width:1100px){.kp-grid{grid-template-columns:1fr}.kp-gal{position:static}.rel-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.kp-wrap{padding:20px 16px 48px}.kp-name{font-size:24px}.del-grid{grid-template-columns:1fr}.rel-grid{grid-template-columns:1fr}}
+</style>
+
+<div class="kp-wrap">
+  <div class="bc"><a href="/">Главная</a><span class="bc-s">›</span><span>Кассы</span><span class="bc-s">›</span><span>Кассовый комплект «Удобный»</span></div>
+  <div class="kp-grid">
+    <div class="kp-gal">
+      <div class="kp-img"><img src="https://kontur.ru/Files/Modules/YmlOffer/12i/8f7e876f-8da2-44a5-af73-3e617ae5d201.png?t=1776778742" alt="Кассовый комплект «Удобный»" loading="lazy"></div>
+    </div>
+    <div>
+      <div class="kp-cat">Кассы</div>
+      <h1 class="kp-name">Кассовый комплект «Удобный»</h1>
+      <p class="kp-short">Готовое решение для продуктовой и непродуктовой розницы, точек общепита и сферы услуг. В комплект входят Касса MSPOS-T-Ф D3 mini с встроенным принтером чеков, учетная система с кассовым ПО, ОФД для передачи данных в ФНС.</p>
+      <div class="kp-pbox">
+        <div class="kp-price-old">46 698 ₽</div><div class="kp-price">45 073 ₽</div>
+        
+        <div class="kp-avail"><span class="kp-dot"></span> В наличии, доставка 48 часов</div>
+        <div class="kp-upd">Цена обновлена: 2026-06-04</div>
+      </div>
+      <div class="cfg">
+  <div class="cfg-lbl">Настройте комплект</div>
+  <div class="cfg-step">
+    <div class="cfg-ttl">1. Ваша отрасль</div>
+    <div class="cfg-opts" id="cfg-industry">
+      <button class="cfg-opt on" data-val="retail" onclick="cfgSel(this,'industry')">🛒 Розница</button>
+      <button class="cfg-opt" data-val="food" onclick="cfgSel(this,'industry')">🍕 Общепит</button>
+      <button class="cfg-opt" data-val="service" onclick="cfgSel(this,'industry')">✂️ Услуги</button>
+    </div>
+  </div>
+  <div class="cfg-step">
+    <div class="cfg-ttl">2. Контур.Маркет — тариф</div>
+    <div class="cfg-opts" id="cfg-tier">
+      <button class="cfg-opt" data-val="base" onclick="cfgSel(this,'tier')">Базовый</button>
+      <button class="cfg-opt on" data-val="optimal" onclick="cfgSel(this,'tier')">Оптимальный</button>
+      <button class="cfg-opt" data-val="premium" onclick="cfgSel(this,'tier')">Премиум</button>
+    </div>
+  </div>
+  <div class="cfg-step">
+    <div class="cfg-ttl">3. Срок ПО</div>
+    <div class="cfg-opts" id="cfg-soft">
+      <button class="cfg-opt on" data-val="3" data-price="3990" onclick="cfgSel(this,'soft')">3 мес. <span class="cfg-p">от 3 990 ₽</span></button>
+      <button class="cfg-opt" data-val="12" data-price="12990" onclick="cfgSel(this,'soft')">12 мес. <span class="cfg-p">от 12 990 ₽</span></button>
+    </div>
+  </div>
+  
+  <div class="cfg-step">
+    <div class="cfg-ttl">4. Контур.ОФД</div>
+    <div class="cfg-opts" id="cfg-ofd">
+      <button class="cfg-opt" data-val="13" data-price="5000" onclick="cfgSel(this,'ofd')">13 мес. <span class="cfg-p">5 000 ₽</span></button>
+      <button class="cfg-opt on" data-val="15" data-price="5300" onclick="cfgSel(this,'ofd')">15 мес. <span class="cfg-p">5 300 ₽</span></button>
+      <button class="cfg-opt" data-val="36" data-price="12000" onclick="cfgSel(this,'ofd')">36 мес. <span class="cfg-p">12 000 ₽</span></button>
+    </div>
+  </div>
+  <div class="cfg-tot">
+    <div id="cfg-rows"></div>
+    <div class="cfg-sum"><span class="cfg-sum-lbl">Итого</span><span class="cfg-sum-val" id="cfg-total">—</span></div>
+    <div class="cfg-note">💡 Цена ПО зависит от региона. Точная стоимость — в KStore.</div>
+  </div>
+</div>
+      <div class="kp-btns">
+        <button id="btn-buy" onclick="cfgBuy()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg> В корзину
+        </button>
+        <button class="btn-fav">♡</button>
+      </div>
+      <button class="btn-consult">Получить консультацию</button>
+      <div class="kp-meta">
+        <div class="kp-mi"><span class="kp-mi-ic">🚚</span><div class="kp-mi-tx"><strong>Доставка по Москве — 48 часов.</strong> По России от 3 рабочих дней.</div></div>
+        <div class="kp-mi"><span class="kp-mi-ic">🛡</span><div class="kp-mi-tx"><strong>Гарантия производителя.</strong></div></div>
+        <div class="kp-mi"><span class="kp-mi-ic">📋</span><div class="kp-mi-tx"><strong>Регистрируем кассу в ФНС</strong> за 1 день.</div></div>
+        <div class="kp-mi"><span class="kp-mi-ic">💳</span><div class="kp-mi-tx"><strong>Рассрочка 0%</strong> до 12 месяцев.</div></div>
+      </div>
+      <div class="kp-tabs">
+        <div class="tabs-nav">
+          <button class="tab-btn on" onclick="openTab(this,'t-desc')">Описание</button>
+          <button class="tab-btn" onclick="openTab(this,'t-specs')">Характеристики</button>
+          <button class="tab-btn" onclick="openTab(this,'t-del')">Доставка</button>
+        </div>
+        <div id="t-desc" class="tab-pane on"><p style="font-size:15px;line-height:1.7">Готовое решение для продуктовой и непродуктовой розницы, точек общепита и сферы услуг. В комплект входят Касса MSPOS-T-Ф D3 mini с встроенным принтером чеков, учетная система с кассовым ПО, ОФД для передачи данных в ФНС. Комплект подходит для работы с Честным знаком и ИС «Меркурий»</p></div>
+        <div id="t-specs" class="tab-pane"><table class="specs-tbl"><tbody><tr><td>Касса MSPOS-T-Ф D3 mini</td><td>-</td></tr><tr><td>Габариты</td><td>250 х 213 х 91 мм</td></tr><tr><td>Вес</td><td>1,1 кг</td></tr><tr><td>Экран</td><td>цветной, LCD, диагональ 10.1”, разрешение 1280х800 пикселей</td></tr><tr><td>Экран покупателя</td><td>монохромный, диагональ 2.4"" (экран не поддерживается кассовым приложением Контур.Маркета)</td></tr><tr><td>Оперативная память</td><td>3Gb</td></tr><tr><td>Операционная система</td><td>Android 13</td></tr><tr><td>Беспроводные интерфейсы подключения</td><td>WiFi 2.4G и 5G 802.11 b/g/n/ac, Bluetooth 2.1/3.0/4.2/5.0</td></tr><tr><td>Интерфейсы подключения</td><td>3 USB Type-A, LAN, RJ11, RJ12 под денежный ящик (ящик не поддерживается кассовым приложением Контур.Маркета)</td></tr><tr><td>Печатающее устройство</td><td>-</td></tr><tr><td>Скорость печати</td><td>100 мм/сек</td></tr><tr><td>Отрез чековой ленты</td><td>Ручной</td></tr><tr><td>Ширина чековой ленты</td><td>57±0,5 мм</td></tr></tbody></table></div>
+        <div id="t-del" class="tab-pane">
+          <div class="del-grid">
+            <div class="del-card"><div class="del-ic">🚀</div><div class="del-nm">Москва и МО — 48 часов</div><div class="del-ds">Курьером.</div><div class="del-pr">Бесплатно от 5 000 ₽</div></div>
+            <div class="del-card"><div class="del-ic">📦</div><div class="del-nm">Россия — от 3 дней</div><div class="del-ds">СДЭК или Почта России.</div><div class="del-pr">По тарифу СДЭК</div></div>
+            <div class="del-card"><div class="del-ic">🏪</div><div class="del-nm">Самовывоз</div><div class="del-ds">Пункты выдачи Контура.</div><div class="del-pr">Бесплатно</div></div>
+            <div class="del-card"><div class="del-ic">💳</div><div class="del-nm">Рассрочка 0%</div><div class="del-ds">До 12 месяцев.</div><div class="del-pr">Только паспорт</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<section class="rel"><div class="sec-in"><h2 class="rel-title">С этим покупают</h2><div class="rel-grid"><a href="/kit-mobilnyj" class="rel-card">
+  <div class="rel-img"><img src="https://kontur.ru/Files/Modules/YmlOffer/14i/35822efc-46fe-4dcf-8c8a-01d0be4f45f2.png?t=1776779206" alt="Кассовый комплект «Мобильный с эквайрингом»" loading="lazy"></div>
+  <div class="rel-body">
+    <div class="rel-cat">Кассы</div>
+    <div class="rel-name">Кассовый комплект «Мобильный с эквайрингом»</div>
+    <div class="rel-price">29 213 ₽</div>
+    <button class="btn-rel" onclick="event.stopPropagation();addToCart('14','Кассовый комплект «Мобильный с эквайрингом»',29213.5)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg> В корзину</button>
+  </div>
+</a><a href="/atol-30f" class="rel-card">
+  <div class="rel-img"><img src="https://kontur.ru/Files/Modules/YmlOffer/7i/dcc04420-04d5-4d9c-9a3f-cdb61cb78421.png?t=1776775279" alt="Онлайн касса Атол 30Ф" loading="lazy"></div>
+  <div class="rel-body">
+    <div class="rel-cat">Кассы</div>
+    <div class="rel-name">Онлайн касса Атол 30Ф</div>
+    <div class="rel-price">68 930 ₽</div>
+    <button class="btn-rel" onclick="event.stopPropagation();addToCart('7','Онлайн касса Атол 30Ф',68930.0)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg> В корзину</button>
+  </div>
+</a><a href="/atol-27f" class="rel-card">
+  <div class="rel-img"><img src="https://kontur.ru/Files/Modules/YmlOffer/6i/7419be63-9635-49cb-8e93-b9ab776297cf.png?t=1776774940" alt="Онлайн касса чеков Атол 27Ф" loading="lazy"></div>
+  <div class="rel-body">
+    <div class="rel-cat">Кассы</div>
+    <div class="rel-name">Онлайн касса чеков Атол 27Ф</div>
+    <div class="rel-price">39 500 ₽</div>
+    <button class="btn-rel" onclick="event.stopPropagation();addToCart('6','Онлайн касса чеков Атол 27Ф',39500.0)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg> В корзину</button>
+  </div>
+</a></div></div></section>
+<script>
+var P_ID=12;var P_PRICE=45073.5;var P_NAME='Кассовый комплект «Удобный»';
+var IS_KASSA=true;var IS_KIT=true;
+var HAS_FN=false;var TARIFF='km_pos';
+function openTab(btn,id){document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('on')});document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('on')});btn.classList.add('on');document.getElementById(id).classList.add('on')}
+
+var CFG={industry:'retail',tier:'optimal',soft:{val:'3',price:3990},fn:{val:'36',price:23100},ofd:{val:'15',price:5300}};
+var SP={base:{'3':1490,'12':4990},optimal:{'3':3990,'12':12990},premium:{'3':6990,'12':19990}};
+var SM={retail:{base:'base_retail',optimal:'optimal_retail',premium:'premium_retail'},food:{base:'base_cathering',optimal:'optimal_cathering',premium:'premium_cathering'},service:{base:'base_service',optimal:'optimal_service',premium:'premium_service'}};
+var FH={retail:'💡 Для розницы рекомендуем 36 мес.',food:'💡 Для общепита — 15 или 36 мес.',service:'💡 Для услуг рекомендуем 36 мес.'};
+function cfgSel(el,g){
+  document.getElementById('cfg-'+g).querySelectorAll('.cfg-opt').forEach(function(o){o.classList.remove('on')});
+  el.classList.add('on');
+  var val=el.getAttribute('data-val'),pr=parseInt(el.getAttribute('data-price')||'0');
+  if(g==='industry'){
+    CFG.industry=val;
+    var rec=val==='food'?'15':'36';
+    var fp=document.getElementById('cfg-fn');
+    if(fp)fp.querySelectorAll('.cfg-opt').forEach(function(o){
+      o.classList.remove('on');
+      if(o.getAttribute('data-val')===rec){o.classList.add('on');CFG.fn={val:rec,price:parseInt(o.getAttribute('data-price')||'0')}}
+    });
+    var h=document.getElementById('cfg-fn-hint');if(h)h.textContent=FH[val]||'';
+  }else if(g==='tier'){
+    CFG.tier=val;
+    document.getElementById('cfg-soft').querySelectorAll('.cfg-opt').forEach(function(o){
+      var v=o.getAttribute('data-val'),p2=(SP[val]||{})[v]||0;
+      o.setAttribute('data-price',p2);
+      var s=o.querySelector('.cfg-p');if(s)s.textContent='от '+p2.toLocaleString('ru-RU')+' ₽';
+    });
+    CFG.soft.price=(SP[val]||{})[CFG.soft.val]||CFG.soft.price;
+  }else if(g==='soft'){CFG.soft={val:val,price:(SP[CFG.tier]||{})[val]||pr};
+  }else if(g==='fn'){CFG.fn={val:val,price:pr};
+  }else if(g==='ofd'){CFG.ofd={val:val,price:pr}}
+  cfgRecalc();
+}
+function cfgRecalc(){
+  var total=P_PRICE+CFG.soft.price+(IS_KIT?0:CFG.fn.price)+CFG.ofd.price;
+  var rows=document.getElementById('cfg-rows'),tv=document.getElementById('cfg-total');
+  if(rows)rows.innerHTML=
+    '<div class="cfg-row"><span>'+P_NAME+'</span><span>'+fmt(P_PRICE)+'</span></div>'+
+    '<div class="cfg-row"><span>Маркет '+CFG.tier+' '+CFG.soft.val+' мес.</span><span style="color:var(--muted)">от '+fmt(CFG.soft.price)+'</span></div>'+
+    (IS_KIT?'<div class="cfg-row"><span>ФН</span><span style="color:var(--mint)">включён</span></div>':'<div class="cfg-row"><span>ФН '+CFG.fn.val+' мес.</span><span>'+fmt(CFG.fn.price)+'</span></div>')+
+    '<div class="cfg-row"><span>ОФД '+CFG.ofd.val+' мес.</span><span>'+fmt(CFG.ofd.price)+'</span></div>';
+  if(tv)tv.textContent='от '+fmt(total);
+}
+function cfgBuy(){
+  var c=getCart();
+  function add(id,nm,pr){var i=c.findIndex(function(x){return String(x.id)===String(id)});if(i>=0){c[i].qty++}else{c.push({id:id,name:nm,price:pr,qty:1})}}
+  add(P_ID,P_NAME,P_PRICE);
+  add('soft_'+CFG.tier+'_'+CFG.soft.val,'Маркет '+CFG.tier+' '+CFG.soft.val+' мес.',CFG.soft.price);
+  if(HAS_FN&&!IS_KIT)add(CFG.fn.val==='15'?16:17,'ФН '+CFG.fn.val+' мес.',CFG.fn.price);
+  add(CFG.ofd.val==='13'?20:CFG.ofd.val==='15'?21:22,'ОФД '+CFG.ofd.val+' мес.',CFG.ofd.price);
+  saveCart(c);
+  var st=(SM[CFG.industry]||{})[CFG.tier]||'optimal_retail';
+  localStorage.setItem('kontur_kstore_url','https://online-sales.kontur.ru/sale?tariffs='+TARIFF+','+st+',km_ofd'+(HAS_FN?'&'+TARIFF+'.Fn='+CFG.fn.val:'')+'&'+st+'.months='+CFG.soft.val+'&km_ofd.months='+CFG.ofd.val+'&backurl='+encodeURIComponent(window.location.href));
+  updateBadge();showToast('Комплект добавлен в корзину');
+  var btn=document.getElementById('btn-buy');
+  if(btn){btn.style.background='var(--mint)';btn.textContent='✓ Добавлено!';setTimeout(function(){btn.style.background='';btn.innerHTML='🛒 В корзину'},2000)}
+}
+cfgRecalc();
+</script>
+
+<footer class="footer">
+  <div class="footer-in">
+    <div>
+      <div class="footer-logo">Контур</div>
+      <div class="footer-desc">Кассы, ФН, ОФД, КЭП, ЭДО — всё в одном месте.</div>
+      <address class="footer-addr"><strong>8 800 500-22-44</strong>Бесплатно по России, 24/7</address>
+    </div>
+    <div class="fcol"><h5>Продукты</h5><a href="#">Контур.Маркет</a><a href="#">Контур.ОФД</a><a href="#">Контур.Диадок</a></div>
+    <div class="fcol"><h5>Покупателям</h5><a href="#">Доставка</a><a href="#">Гарантия</a><a href="#">Рассрочка 0%</a></div>
+    <div class="fcol"><h5>Компания</h5><a href="#">О Контуре</a><a href="#">Контакты</a></div>
+  </div>
+  <div class="footer-bot">
+    <span>© 2026 СКБ Контур. Все права защищены.</span>
+    <div class="footer-docs"><a href="#">Политика конфиденциальности</a><a href="#">Реквизиты</a></div>
+  </div>
+</footer>
+
+<script>
+function getCart(){try{return JSON.parse(localStorage.getItem('kontur_cart')||'[]')}catch(e){return[]}}
+function saveCart(c){localStorage.setItem('kontur_cart',JSON.stringify(c))}
+function fmt(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+function updateBadge(){
+  var c=getCart(),t=c.reduce(function(s,i){return s+(i.qty||0)},0);
+  var b=document.getElementById('cart-badge');
+  if(b){b.textContent=t;b.style.display=t>0?'block':'none'}
+}
+function addToCart(id,name,price){
+  var c=getCart(),i=c.findIndex(function(x){return String(x.id)===String(id)});
+  if(i>=0){c[i].qty++}else{c.push({id:id,name:name,price:price,qty:1})}
+  saveCart(c);updateBadge();
+  showToast(name+' добавлен в корзину');
+}
+function showToast(msg){
+  var t=document.getElementById('k-toast'),tx=document.getElementById('k-toast-txt');
+  if(tx)tx.textContent=msg;
+  if(t){t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0'},2500)}
+}
+updateBadge();
+window.addEventListener('storage',function(e){if(e.key==='kontur_cart')updateBadge()});
+</script>
+</body></html>
