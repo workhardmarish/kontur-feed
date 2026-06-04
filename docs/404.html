@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>Страница не найдена</title>
+<meta name="description" content="">
+
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#21212A;--white:#fff;--gray:#F4F4F4;--gray2:#EBEBEB;--muted:#7A7A8A;--orange:#FF6B35;--mint:#00C896;--blue:#3D7FFF;--border:rgba(33,33,42,.1)}
+body{font-family:'Onest','Helvetica Neue',Arial,sans-serif;background:#fff;color:var(--black);-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:9999;background:var(--black);border-bottom:1px solid rgba(255,255,255,.08)}
+.hdr-in{max-width:1280px;margin:0 auto;padding:0 32px;height:60px;display:flex;align-items:center;gap:24px}
+.logo{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.3px;flex-shrink:0}
+.hdr-nav{flex:1;display:flex;gap:4px}
+.hdr-nav a{font-size:14px;color:rgba(255,255,255,.55);padding:7px 14px;border-radius:8px;transition:.15s}
+.hdr-nav a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.hdr-phone{font-size:14px;font-weight:700;color:#fff;border-left:1px solid rgba(255,255,255,.1);padding-left:20px}
+.hdr-phone small{display:block;font-size:11px;font-weight:400;color:var(--orange)}
+.cart-btn{position:relative;width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;transition:.15s}
+.cart-btn:hover{background:rgba(255,255,255,.08)}
+.cart-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--orange);border-radius:20px;color:#fff;font-size:10px;font-weight:700;line-height:16px;text-align:center;display:none}
+.btn-ghost{height:36px;padding:0 16px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#fff;font-size:14px;font-weight:500;transition:.15s}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+
+/* FOOTER */
+.footer{background:var(--black);border-top:1px solid rgba(255,255,255,.08);margin-top:80px}
+.footer-in{max-width:1280px;margin:0 auto;padding:48px 32px 40px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+.footer-logo{font-size:17px;font-weight:700;color:#fff;margin-bottom:12px}
+.footer-desc{font-size:12px;color:rgba(255,255,255,.4);line-height:1.65;max-width:240px;margin-bottom:18px}
+.footer-addr{font-size:12px;color:rgba(255,255,255,.4);line-height:1.6;font-style:normal}
+.footer-addr strong{color:#fff;display:block;font-size:14px;font-weight:700;margin-bottom:3px}
+.fcol h5{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin:0 0 16px}
+.fcol a{display:block;font-size:12px;color:rgba(255,255,255,.4);margin-bottom:9px;transition:.15s}
+.fcol a:hover{color:#fff}
+.footer-bot{max-width:1280px;margin:0 auto;padding:18px 32px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.3)}
+.footer-docs{display:flex;gap:20px}.footer-docs a{color:rgba(255,255,255,.3)}
+.footer-docs a:hover{color:#fff}
+
+/* TOAST */
+.k-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--black);color:#fff;padding:11px 22px;border-radius:12px;font-size:14px;font-weight:500;z-index:99999;display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:opacity .3s;white-space:nowrap;border:1px solid rgba(255,255,255,.1)}
+.k-toast-ok{color:var(--mint);font-size:17px}
+
+@media(max-width:768px){
+  .hdr-in{padding:0 16px}
+  .hdr-nav,.hdr-phone,.btn-ghost{display:none}
+  .footer-in{grid-template-columns:1fr;padding:32px 16px}
+  .footer-bot{flex-direction:column;gap:8px;padding:16px;text-align:center}
+}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-in">
+    <a href="/" class="logo">Контур</a>
+    <nav class="hdr-nav">
+      <a href="/#kasses">Кассы</a>
+      <a href="/#kits">Комплекты</a>
+      <a href="/#fn-ofd">ФН и ОФД</a>
+      <a href="/#edo">КЭП и ЭДО</a>
+      <a href="/#periphery">Периферия</a>
+    </nav>
+    <div class="hdr-right">
+      <div class="hdr-phone">8 800 500-22-44<small>Бесплатно по России</small></div>
+      <a href="/cart" class="cart-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
+        <span class="cart-badge" id="cart-badge">0</span>
+      </a>
+      <button class="btn-ghost">Войти в сервис</button>
+    </div>
+  </div>
+</header>
+<div class="k-toast" id="k-toast"><span class="k-toast-ok">✓</span><span id="k-toast-txt"></span></div>
+<div style="text-align:center;padding:120px 40px">
+  <div style="font-size:72px;font-weight:700;color:#EBEBEB;margin-bottom:16px">404</div>
+  <h1 style="font-size:28px;font-weight:700;margin-bottom:12px">Страница не найдена</h1>
+  <p style="color:#7A7A8A;margin-bottom:28px">Возможно, ссылка устарела или товар снят с продажи.</p>
+  <a href="/" style="padding:13px 28px;background:#FF6B35;color:#fff;border-radius:12px;font-weight:700;font-size:14px">На главную</a>
+</div>
+<footer class="footer">
+  <div class="footer-in">
+    <div>
+      <div class="footer-logo">Контур</div>
+      <div class="footer-desc">Кассы, ФН, ОФД, КЭП, ЭДО — всё в одном месте.</div>
+      <address class="footer-addr"><strong>8 800 500-22-44</strong>Бесплатно по России, 24/7</address>
+    </div>
+    <div class="fcol"><h5>Продукты</h5><a href="#">Контур.Маркет</a><a href="#">Контур.ОФД</a><a href="#">Контур.Диадок</a></div>
+    <div class="fcol"><h5>Покупателям</h5><a href="#">Доставка</a><a href="#">Гарантия</a><a href="#">Рассрочка 0%</a></div>
+    <div class="fcol"><h5>Компания</h5><a href="#">О Контуре</a><a href="#">Контакты</a></div>
+  </div>
+  <div class="footer-bot">
+    <span>© 2026 СКБ Контур. Все права защищены.</span>
+    <div class="footer-docs"><a href="#">Политика конфиденциальности</a><a href="#">Реквизиты</a></div>
+  </div>
+</footer>
+
+<script>
+function getCart(){try{return JSON.parse(localStorage.getItem('kontur_cart')||'[]')}catch(e){return[]}}
+function saveCart(c){localStorage.setItem('kontur_cart',JSON.stringify(c))}
+function fmt(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+function updateBadge(){
+  var c=getCart(),t=c.reduce(function(s,i){return s+(i.qty||0)},0);
+  var b=document.getElementById('cart-badge');
+  if(b){b.textContent=t;b.style.display=t>0?'block':'none'}
+}
+function addToCart(id,name,price){
+  var c=getCart(),i=c.findIndex(function(x){return String(x.id)===String(id)});
+  if(i>=0){c[i].qty++}else{c.push({id:id,name:name,price:price,qty:1})}
+  saveCart(c);updateBadge();
+  showToast(name+' добавлен в корзину');
+}
+function showToast(msg){
+  var t=document.getElementById('k-toast'),tx=document.getElementById('k-toast-txt');
+  if(tx)tx.textContent=msg;
+  if(t){t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0'},2500)}
+}
+updateBadge();
+window.addEventListener('storage',function(e){if(e.key==='kontur_cart')updateBadge()});
+</script>
+</body></html>
