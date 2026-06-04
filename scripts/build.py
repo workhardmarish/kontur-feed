@@ -228,7 +228,7 @@ def header(title='Контур — Кассы и торговля', desc=''):
 <body>
 <header class="hdr">
   <div class="hdr-in">
-    <a href="/" class="logo">Контур</a>
+    <a href="/kontur-feed/" class="logo">Контур</a>
     <nav class="hdr-nav">
       <a href="/kontur-feed/#kasses">Кассы</a>
       <a href="/kontur-feed/#kits">Комплекты</a>
@@ -694,7 +694,7 @@ cfgRecalc();''' if is_kassa else ''
 </style>
 
 <div class="kp-wrap">
-  <div class="bc"><a href="/">Главная</a><span class="bc-s">›</span><span>{p['cat']}</span><span class="bc-s">›</span><span>{p['name']}</span></div>
+  <div class="bc"><a href="/kontur-feed/">Главная</a><span class="bc-s">›</span><span>{p['cat']}</span><span class="bc-s">›</span><span>{p['name']}</span></div>
   <div class="kp-grid">
     <div class="kp-gal">
       <div class="kp-img">{'<img src="'+p["img"]+'" alt="'+p["name"]+'" loading="lazy">' if p['img'] else ''}</div>
@@ -987,7 +987,7 @@ def main():
   <div style="font-size:72px;font-weight:700;color:#EBEBEB;margin-bottom:16px">404</div>
   <h1 style="font-size:28px;font-weight:700;margin-bottom:12px">Страница не найдена</h1>
   <p style="color:#7A7A8A;margin-bottom:28px">Возможно, ссылка устарела или товар снят с продажи.</p>
-  <a href="/" style="padding:13px 28px;background:#FF6B35;color:#fff;border-radius:12px;font-weight:700;font-size:14px">На главную</a>
+  <a href="/kontur-feed/" style="padding:13px 28px;background:#FF6B35;color:#fff;border-radius:12px;font-weight:700;font-size:14px">На главную</a>
 </div>''' + footer())
 
     print(f"\n✅ Site built: {len(products)+3} pages → {OUTPUT_DIR}/")
