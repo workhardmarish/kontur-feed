@@ -33,6 +33,25 @@ KASSA_CFG = {
     15: ('km_printer',                   True,  True,  'kit-vygodnyj',   'fr30f',     True),
 }
 
+# KStore ссылки для товаров без конфигуратора (ОФД, ФН, Диадок)
+KSTORE_LINKS = {
+    # ФН
+    16: 'https://online-sales.kontur.ru/sale?tariffs=ofd_kontur_fn&ofd_kontur_fn.months=15',
+    17: 'https://online-sales.kontur.ru/sale?tariffs=ofd_kontur_fn&ofd_kontur_fn.months=36',
+    # ОФД
+    20: 'https://online-sales.kontur.ru/sale?tariffs=km_ofd&km_ofd.months=13',
+    21: 'https://online-sales.kontur.ru/sale?tariffs=km_ofd&km_ofd.months=15',
+    22: 'https://online-sales.kontur.ru/sale?tariffs=km_ofd&km_ofd.months=36',
+    # Диадок
+    2:  'https://online-sales.kontur.ru/sale?tariffs=diadoc_package250',
+    26: 'https://online-sales.kontur.ru/sale?tariffs=diadoc_package600',
+    27: 'https://online-sales.kontur.ru/sale?tariffs=diadoc_package1200',
+    28: 'https://online-sales.kontur.ru/sale?tariffs=diadoc_package3000',
+}
+
+# Товары только по заявке на менеджера (онлайн не продаются)
+MANAGER_ONLY = {9, 10, 18, 19}
+
 PAGE_SLUGS = {
     **{pid: cfg[3] for pid, cfg in KASSA_CFG.items()},
     16: 'fn-15',     17: 'fn-36',
@@ -85,14 +104,24 @@ def fetch_feed():
                 time.sleep((attempt+1)*10 + random.randint(1,5))
     raise Exception("Cannot fetch feed")
 
-def guess_cat_slug(cat_name):
+def guess_cat_slug(cat_name, name=''):
     c = cat_name.lower()
-    if any(w in c for w in ['касс','pos','терминал','регистратор']): return 'kasses'
+    n = name.lower()
+    # Сначала по названию товара — точнее чем по категории
+    if any(w in n for w in ['комплект']): return 'kits'
+    if any(w in n for w in ['сканер', 'scanner']): return 'periphery'
+    if any(w in n for w in ['принтер', 'printer', 'jett']): return 'periphery'
+    if any(w in n for w in ['денежный ящик', 'ящик']): return 'periphery'
+    if any(w in n for w in ['накопитель', 'фн-', 'fn-']): return 'fn'
+    if any(w in n for w in ['диадок', 'diadoc']): return 'edo'
+    if any(w in n for w in ['оператор фискальных', 'офд']): return 'ofd'
+    # Затем по категории
     if any(w in c for w in ['комплект','набор']): return 'kits'
     if any(w in c for w in ['накопитель','фн']): return 'fn'
     if any(w in c for w in ['офд','оператор']): return 'ofd'
     if any(w in c for w in ['диадок','эдо','документ']): return 'edo'
     if any(w in c for w in ['сканер','принтер','ящик']): return 'periphery'
+    if any(w in c for w in ['касс','pos','терминал','регистратор']): return 'kasses'
     return 'other'
 
 def parse(content):
@@ -109,7 +138,9 @@ def parse(content):
         desc     = o.findtext('description', '')
         pics     = [p.text for p in o.findall('picture') if p.text]
         params   = [{'name': p.get('name',''), 'value': p.text or ''} for p in o.findall('param')]
-        cat_slug = guess_cat_slug(cat_name)
+        cat_slug = guess_cat_slug(cat_name, name)
+        # Явные переопределения по id
+        if pid in {18, 19}: cat_slug = 'ofd'   # ФН+ОФД комплекты → раздел ОФД
         slug     = PAGE_SLUGS.get(pid, f'product-{pid}')
         kassa_cfg = KASSA_CFG.get(pid, ('', False, False, slug, '', True))
         products.append({
@@ -303,28 +334,40 @@ def build_index(products, updated):
 </div>'''
 
     def kcard(p):
-        url = f"/kontur-feed/{p['slug']}/"
-        return f'''<div class="kcard" onclick="location.href='{url}'">
-  <div class="kcard-img"><img src="{p['img']}" alt="{p['name']}" loading="lazy"></div>
-  <div class="kcard-body">
-    {'<span class="sale-badge">Скидка</span>' if p['oldPrice'] > 0 else ''}
-    <div class="kcard-name">{p['name']}</div>
-    <div class="kcard-desc">{p['desc'][:120]}</div>
-    <div class="kcard-pr">
-      {f'<span class="old-price">{fmt(p["oldPrice"])}</span> ' if p['oldPrice']>0 else ''}
-      <strong>{fmt(p['price'])}</strong>
-    </div>
-    <button class="btn-kit" onclick="event.stopPropagation();addToCart('{p['id']}','{p['name'].replace(chr(39),chr(92)+chr(39))}',{p['price']})">{CART_SVG} Купить комплект</button>
-  </div>
-</div>'''
+        url      = '/kontur-feed/' + p['slug'] + '/'
+        pid_k    = int(p['id'])
+        is_mgr   = pid_k in MANAGER_ONLY
+        pname    = p['name'].replace("'", "\\'")
+        old_html = ('<span class="sale-badge">Скидка</span>'
+                    if p['oldPrice'] > 0 else '')
+        pr_html  = (('<span class="old-price">' + fmt(p['oldPrice']) + '</span> ')
+                    if p['oldPrice'] > 0 else '')
+        if is_mgr:
+            btn = '<a href="tel:88005002244" class="btn-kit btn-kit-mgr" onclick="event.stopPropagation()">Оставить заявку</a>'
+        else:
+            btn = ('<button class="btn-kit" onclick="event.stopPropagation();'
+                   "addToCart('" + str(p['id']) + "','" + pname + "'," + str(p['price']) + ')">'
+                   + CART_SVG + ' Купить комплект</button>')
+        return (
+            '<div class="kcard" onclick="location.href=\'' + url + '\'">'
+            '<div class="kcard-img"><img src="' + p['img'] + '" alt="' + p['name'] + '" loading="lazy"></div>'
+            '<div class="kcard-body">'
+            + old_html
+            + '<div class="kcard-name">' + p['name'] + '</div>'
+            '<div class="kcard-desc">' + p['desc'][:120] + '</div>'
+            '<div class="kcard-pr">' + pr_html + '<strong>' + fmt(p['price']) + '</strong></div>'
+            + btn
+            + '</div></div>'
+        )
+
 
     sections = {
-        'kasses':    ('Кассы и POS-терминалы',    '#FF6B35', 'Кассы',     pcard, 6),
-        'kits':      ('Готовые кассовые комплекты','#00C896', 'Комплекты', kcard, 4),
-        'fn':        ('Фискальные накопители',     '#3D7FFF', 'ФН и ОФД',  pcard, 4),
-        'ofd':       ('Контур.ОФД',               '#3D7FFF', 'ФН и ОФД',  pcard, 3),
-        'edo':       ('Электронный документооборот','#7B61FF', 'ЭДО',       pcard, 3),
-        'periphery': ('Периферия',                 '#FF6B35', 'Периферия', pcard, 3),
+        'kasses':    ('Кассы и POS-терминалы',          '#FF6B35', 'Кассы',      pcard, 99),
+        'kits':      ('Готовые кассовые комплекты',      '#00C896', 'Комплекты',  kcard, 99),
+        'fn':        ('Фискальные накопители',           '#3D7FFF', 'ФН и ОФД',  pcard, 99),
+        'ofd':       ('Контур.ОФД и комплекты ФН+ОФД',  '#3D7FFF', 'ФН и ОФД',  pcard, 99),
+        'edo':       ('Контур.Диадок — ЭДО',            '#7B61FF', 'ЭДО',        pcard, 99),
+        'periphery': ('Периферия',                       '#FF6B35', 'Периферия',  pcard, 99),
     }
 
     sections_html = ''
@@ -402,8 +445,9 @@ def build_index(products, updated):
 .kcard-name{{font-size:15px;font-weight:700;margin-bottom:6px}}
 .kcard-desc{{font-size:12px;color:var(--muted);line-height:1.5;flex:1;margin-bottom:10px}}
 .kcard-pr{{font-size:18px;font-weight:700;margin-bottom:10px}}
-.btn-kit{{display:inline-flex;align-items:center;gap:5px;padding:9px 16px;font-size:12px;font-weight:700;background:var(--mint);color:#fff;border:none;border-radius:9px;transition:.15s}}
+.btn-kit{{display:inline-flex;align-items:center;gap:5px;padding:9px 16px;font-size:12px;font-weight:700;background:var(--mint);color:#fff;border:none;border-radius:9px;transition:.15s;text-decoration:none}}
 .btn-kit:hover{{opacity:.88}}
+.btn-kit-mgr{{background:var(--orange)}}
 .upd-note{{font-size:11px;color:var(--muted);margin-top:16px}}
 .cta{{background:var(--black);padding:72px 0;margin-top:0;border-top:1px solid rgba(255,255,255,.08)}}
 .cta-in{{max-width:1280px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}}
@@ -558,10 +602,24 @@ def build_product(p, all_products, updated):
   </div>
 </div>'''
 
-    online_sale = p.get('onlineSale', True)
-    hw_param    = p.get('hwParam', '')
-    buy_click   = 'cfgBuy()' if is_kassa else f"addToCart('{pid}','{p['name'].replace(chr(39),chr(92)+chr(39))}',{p['price']})"
-    buy_label   = 'Получить консультацию' if not online_sale else 'В корзину'
+    online_sale  = p.get('onlineSale', True)
+    hw_param     = p.get('hwParam', '')
+    manager_only = pid in MANAGER_ONLY
+    kstore_url   = KSTORE_LINKS.get(pid, '')
+
+    if manager_only:
+        # Только заявка — нет кнопки В корзину, только форма менеджера
+        buy_click  = "window.location.href='tel:88005002244'"
+        buy_label  = 'Оставить заявку'
+        kstore_btn = ''
+    elif is_kassa:
+        buy_click  = 'cfgBuy()'
+        buy_label  = 'В корзину' if online_sale else 'Получить консультацию'
+        kstore_btn = ''
+    else:
+        buy_click  = f"addToCart('{pid}','{p['name'].replace(chr(39),chr(92)+chr(39))}',{p['price']})"
+        buy_label  = 'В корзину'
+        kstore_btn = f'<a href="{kstore_url}" class="btn-kstore" target="_blank">Купить в KStore →</a>' if kstore_url else ''
     js_vars = f'''var P_ID={pid};var P_PRICE={p['price']};var P_NAME='{p['name'].replace(chr(39),chr(92)+chr(39))}';
 var IS_KASSA={'true' if is_kassa else 'false'};var IS_KIT={'true' if is_kit else 'false'};
 var HAS_FN={'true' if has_fn else 'false'};var TARIFF='{tariff}';
@@ -683,6 +741,8 @@ cfgRecalc();''' if is_kassa else ''
 .btn-fav:hover{{color:var(--orange);border-color:var(--orange)}}
 .btn-consult{{width:100%;padding:12px;font-size:14px;font-weight:500;background:transparent;color:var(--black);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:.15s}}
 .btn-consult:hover{{background:var(--gray2)}}
+.btn-kstore{{display:block;padding:13px;font-size:14px;font-weight:700;background:var(--orange);color:#fff;border-radius:12px;text-align:center;margin-top:10px;transition:opacity .15s}}
+.btn-kstore:hover{{opacity:.88}}
 .kp-meta{{display:flex;flex-direction:column;gap:9px;margin:14px 0}}
 .kp-mi{{display:flex;align-items:flex-start;gap:9px;font-size:13px}}
 .kp-mi-ic{{font-size:15px;flex-shrink:0}}.kp-mi-tx{{color:var(--muted);line-height:1.5}}.kp-mi-tx strong{{color:var(--black)}}
@@ -741,6 +801,7 @@ cfgRecalc();''' if is_kassa else ''
         <button class="btn-fav">♡</button>
       </div>
       <button class="btn-consult">Получить консультацию</button>
+      {kstore_btn}
       <div class="kp-meta">
         <div class="kp-mi"><span class="kp-mi-ic">🚚</span><div class="kp-mi-tx"><strong>Доставка по Москве — 48 часов.</strong> По России от 3 рабочих дней.</div></div>
         <div class="kp-mi"><span class="kp-mi-ic">🛡</span><div class="kp-mi-tx"><strong>Гарантия производителя.</strong></div></div>
