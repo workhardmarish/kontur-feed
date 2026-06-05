@@ -122,6 +122,8 @@ button{font-family:inherit;cursor:pointer}
 .btn-fav:hover{color:var(--orange);border-color:var(--orange)}
 .btn-consult{width:100%;padding:12px;font-size:14px;font-weight:500;background:transparent;color:var(--black);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:.15s}
 .btn-consult:hover{background:var(--gray2)}
+.btn-kstore{display:block;padding:13px;font-size:14px;font-weight:700;background:var(--orange);color:#fff;border-radius:12px;text-align:center;margin-top:10px;transition:opacity .15s}
+.btn-kstore:hover{opacity:.88}
 .kp-meta{display:flex;flex-direction:column;gap:9px;margin:14px 0}
 .kp-mi{display:flex;align-items:flex-start;gap:9px;font-size:13px}
 .kp-mi-ic{font-size:15px;flex-shrink:0}.kp-mi-tx{color:var(--muted);line-height:1.5}.kp-mi-tx strong{color:var(--black)}
@@ -170,16 +172,17 @@ button{font-family:inherit;cursor:pointer}
         <div class="kp-price">21 200 ₽</div>
         
         <div class="kp-avail"><span class="kp-dot"></span> В наличии, доставка 48 часов</div>
-        <div class="kp-upd">Цена обновлена: 2026-06-04</div>
+        <div class="kp-upd">Цена обновлена: 2026-06-05</div>
       </div>
       
       <div class="kp-btns">
-        <button id="btn-buy" onclick="addToCart('18','Комплект: Фискальный Накопитель + ОФД на 15 месяцев',21200.0)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg> В корзину
+        <button id="btn-buy" onclick="window.location.href='tel:88005002244'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg> Оставить заявку
         </button>
         <button class="btn-fav">♡</button>
       </div>
       <button class="btn-consult">Получить консультацию</button>
+      
       <div class="kp-meta">
         <div class="kp-mi"><span class="kp-mi-ic">🚚</span><div class="kp-mi-tx"><strong>Доставка по Москве — 48 часов.</strong> По России от 3 рабочих дней.</div></div>
         <div class="kp-mi"><span class="kp-mi-ic">🛡</span><div class="kp-mi-tx"><strong>Гарантия производителя.</strong></div></div>

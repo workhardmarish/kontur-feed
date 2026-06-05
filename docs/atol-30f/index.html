@@ -122,6 +122,8 @@ button{font-family:inherit;cursor:pointer}
 .btn-fav:hover{color:var(--orange);border-color:var(--orange)}
 .btn-consult{width:100%;padding:12px;font-size:14px;font-weight:500;background:transparent;color:var(--black);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:.15s}
 .btn-consult:hover{background:var(--gray2)}
+.btn-kstore{display:block;padding:13px;font-size:14px;font-weight:700;background:var(--orange);color:#fff;border-radius:12px;text-align:center;margin-top:10px;transition:opacity .15s}
+.btn-kstore:hover{opacity:.88}
 .kp-meta{display:flex;flex-direction:column;gap:9px;margin:14px 0}
 .kp-mi{display:flex;align-items:flex-start;gap:9px;font-size:13px}
 .kp-mi-ic{font-size:15px;flex-shrink:0}.kp-mi-tx{color:var(--muted);line-height:1.5}.kp-mi-tx strong{color:var(--black)}
@@ -170,7 +172,7 @@ button{font-family:inherit;cursor:pointer}
         <div class="kp-price">68 930 ₽</div>
         <div class="kp-price-note">Цена кассы без комплектации</div>
         <div class="kp-avail"><span class="kp-dot"></span> В наличии, доставка 48 часов</div>
-        <div class="kp-upd">Цена обновлена: 2026-06-04</div>
+        <div class="kp-upd">Цена обновлена: 2026-06-05</div>
       </div>
       <div class="cfg">
   <div class="cfg-lbl">Скомплектуйте кассу</div>
@@ -226,6 +228,7 @@ button{font-family:inherit;cursor:pointer}
         <button class="btn-fav">♡</button>
       </div>
       <button class="btn-consult">Получить консультацию</button>
+      
       <div class="kp-meta">
         <div class="kp-mi"><span class="kp-mi-ic">🚚</span><div class="kp-mi-tx"><strong>Доставка по Москве — 48 часов.</strong> По России от 3 рабочих дней.</div></div>
         <div class="kp-mi"><span class="kp-mi-ic">🛡</span><div class="kp-mi-tx"><strong>Гарантия производителя.</strong></div></div>
@@ -252,15 +255,7 @@ button{font-family:inherit;cursor:pointer}
     </div>
   </div>
 </div>
-<section class="rel"><div class="sec-in"><h2 class="rel-title">С этим покупают</h2><div class="rel-grid"><a href="/kontur-feed/kit-mobilnyj/" class="rel-card">
-  <div class="rel-img"><img src="https://kontur.ru/Files/Modules/YmlOffer/14i/35822efc-46fe-4dcf-8c8a-01d0be4f45f2.png?t=1776779206" alt="Кассовый комплект «Мобильный с эквайрингом»" loading="lazy"></div>
-  <div class="rel-body">
-    <div class="rel-cat">Кассы</div>
-    <div class="rel-name">Кассовый комплект «Мобильный с эквайрингом»</div>
-    <div class="rel-price">29 213 ₽</div>
-    <button class="btn-rel" onclick="event.stopPropagation();addToCart('14','Кассовый комплект «Мобильный с эквайрингом»',29213.5)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg> В корзину</button>
-  </div>
-</a><a href="/kontur-feed/atol-27f/" class="rel-card">
+<section class="rel"><div class="sec-in"><h2 class="rel-title">С этим покупают</h2><div class="rel-grid"><a href="/kontur-feed/atol-27f/" class="rel-card">
   <div class="rel-img"><img src="https://kontur.ru/Files/Modules/YmlOffer/6i/7419be63-9635-49cb-8e93-b9ab776297cf.png?t=1776774940" alt="Онлайн касса чеков Атол 27Ф" loading="lazy"></div>
   <div class="rel-body">
     <div class="rel-cat">Кассы</div>
@@ -275,6 +270,14 @@ button{font-family:inherit;cursor:pointer}
     <div class="rel-name">Касса MSPOS‑T‑Ф D3 Mini</div>
     <div class="rel-price">38 430 ₽</div>
     <button class="btn-rel" onclick="event.stopPropagation();addToCart('5','Касса MSPOS‑T‑Ф D3 Mini',38430.0)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg> В корзину</button>
+  </div>
+</a><a href="/kontur-feed/mspos-f20/" class="rel-card">
+  <div class="rel-img"><img src="https://kontur.ru/Files/Modules/YmlOffer/4i/4b83aa41-cf8f-4132-8810-3595c71b2f06.png?t=1776773407" alt="Мобильная касса MSPOS‑F20‑Ф" loading="lazy"></div>
+  <div class="rel-body">
+    <div class="rel-cat">Кассы</div>
+    <div class="rel-name">Мобильная касса MSPOS‑F20‑Ф</div>
+    <div class="rel-price">22 570 ₽</div>
+    <button class="btn-rel" onclick="event.stopPropagation();addToCart('4','Мобильная касса MSPOS‑F20‑Ф',22570.0)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg> В корзину</button>
   </div>
 </a></div></div></section>
 <script>
