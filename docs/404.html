@@ -7,12 +7,12 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--black:#21212A;--white:#fff;--gray:#F4F4F4;--gray2:#EBEBEB;--muted:#7A7A8A;--orange:#FF6B35;--mint:#00C896;--blue:#3D7FFF;--border:rgba(33,33,42,.1)}
-body{font-family:'Onest','Helvetica Neue',Arial,sans-serif;background:#fff;color:var(--black);-webkit-font-smoothing:antialiased}
+body{font-family:'Montserrat','Helvetica Neue',Arial,sans-serif;background:#fff;color:var(--black);-webkit-font-smoothing:antialiased}
 a{text-decoration:none;color:inherit}
 img{display:block;max-width:100%}
 button{font-family:inherit;cursor:pointer}
@@ -32,6 +32,22 @@ button{font-family:inherit;cursor:pointer}
 .cart-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--orange);border-radius:20px;color:#fff;font-size:10px;font-weight:700;line-height:16px;text-align:center;display:none}
 .btn-ghost{height:36px;padding:0 16px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#fff;font-size:14px;font-weight:500;transition:.15s}
 .btn-ghost:hover{background:rgba(255,255,255,.08)}
+.phone-link{color:#fff;transition:.15s}
+.phone-link:hover{color:var(--orange)}
+.hdr-burger{display:none;width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#fff;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-nav-mob{display:none;position:fixed;top:60px;left:0;right:0;background:var(--black);border-bottom:1px solid rgba(255,255,255,.08);flex-direction:column;padding:8px 16px 16px;z-index:9998}
+.hdr-nav-mob.open{display:flex}
+.hdr-nav-mob a{color:rgba(255,255,255,.75);font-size:15px;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,.06)}
+.hdr-nav-mob .hdr-phone-mob{padding:14px 4px 0;font-size:15px;font-weight:700;color:#fff}
+
+/* FORM MODAL (заявка) */
+.kform-modal{position:fixed;inset:0;z-index:99999;display:none}
+.kform-modal.kform-open{display:block}
+.kform-overlay{position:absolute;inset:0;background:rgba(15,15,20,.6)}
+.kform-box{position:relative;z-index:1;max-width:480px;width:90%;margin:8vh auto 0;background:#fff;border-radius:18px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:82vh;overflow-y:auto}
+.kform-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:26px;line-height:1;cursor:pointer;color:var(--muted)}
+.kform-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.kform-sub{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:18px}
 
 /* FOOTER */
 .footer{background:var(--black);border-top:1px solid rgba(255,255,255,.08);margin-top:80px}
@@ -54,8 +70,13 @@ button{font-family:inherit;cursor:pointer}
 @media(max-width:768px){
   .hdr-in{padding:0 16px}
   .hdr-nav,.hdr-phone,.btn-ghost{display:none}
-  .footer-in{grid-template-columns:1fr;padding:32px 16px}
+  .hdr-burger{display:flex}
+  .footer-in{grid-template-columns:1fr;padding:32px 16px;gap:28px}
   .footer-bot{flex-direction:column;gap:8px;padding:16px;text-align:center}
+  .kform-box{width:94%;padding:22px;margin-top:6vh}
+}
+@media(max-width:420px){
+  .kform-title{font-size:18px}
 }
 </style>
 </head>
@@ -71,14 +92,26 @@ button{font-family:inherit;cursor:pointer}
       <a href="/kontur-feed/#periphery">Периферия</a>
     </nav>
     <div class="hdr-right">
-      <div class="hdr-phone">8 800 500-22-44<small>Бесплатно по России</small></div>
+      <div class="hdr-phone"><a href="tel:88005002244" class="phone-link">8 800 500-22-44</a><small>Бесплатно по России</small></div>
       <a href="/kontur-feed/cart/" class="cart-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 5H5L7 15H18L21 7H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
         <span class="cart-badge" id="cart-badge">0</span>
       </a>
       <button class="btn-ghost">Войти в сервис</button>
+      <button class="hdr-burger" id="hdr-burger" aria-label="Меню">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
     </div>
   </div>
+  <nav class="hdr-nav-mob" id="hdr-nav-mob">
+    <a href="/kontur-feed/#kasses">Кассы</a>
+    <a href="/kontur-feed/#kits">Комплекты</a>
+    <a href="/kontur-feed/#fn-ofd">ФН и ОФД</a>
+    <a href="/kontur-feed/#edo">КЭП и ЭДО</a>
+    <a href="/kontur-feed/#periphery">Периферия</a>
+    <a href="/kontur-feed/cart/">Корзина</a>
+    <div class="hdr-phone-mob"><a href="tel:88005002244" class="phone-link">8 800 500-22-44</a></div>
+  </nav>
 </header>
 <div class="k-toast" id="k-toast"><span class="k-toast-ok">✓</span><span id="k-toast-txt"></span></div>
 <div style="text-align:center;padding:120px 40px">
@@ -92,7 +125,7 @@ button{font-family:inherit;cursor:pointer}
     <div>
       <div class="footer-logo">Контур</div>
       <div class="footer-desc">Кассы, ФН, ОФД, КЭП, ЭДО — всё в одном месте.</div>
-      <address class="footer-addr"><strong>8 800 500-22-44</strong>Бесплатно по России, 24/7</address>
+      <address class="footer-addr"><strong><a href="tel:88005002244" class="phone-link">8 800 500-22-44</a></strong>Бесплатно по России, 24/7</address>
     </div>
     <div class="fcol"><h5>Продукты</h5><a href="#">Контур.Маркет</a><a href="#">Контур.ОФД</a><a href="#">Контур.Диадок</a></div>
     <div class="fcol"><h5>Покупателям</h5><a href="#">Доставка</a><a href="#">Гарантия</a><a href="#">Рассрочка 0%</a></div>
@@ -103,6 +136,39 @@ button{font-family:inherit;cursor:pointer}
     <div class="footer-docs"><a href="#">Политика конфиденциальности</a><a href="#">Реквизиты</a></div>
   </div>
 </footer>
+
+<script src="https://forms.kontur.ru/widget/loader" async defer></script>
+<div id="kform-modal" class="kform-modal" aria-hidden="true">
+  <div class="kform-overlay" data-kform-close></div>
+  <div class="kform-box" role="dialog" aria-modal="true" aria-labelledby="kform-title">
+    <button type="button" class="kform-close" data-kform-close aria-label="Закрыть">&times;</button>
+    <h3 id="kform-title" class="kform-title">Оставить заявку</h3>
+    <p class="kform-sub">Это оборудование продаётся только через менеджера — заполните форму, и мы свяжемся с вами.</p>
+    <div data-form-widget="49ec006a-7a4f-4c54-8ae5-bc70448c2259"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var modal=document.getElementById('kform-modal');
+  if(!modal)return;
+  window.openApplicationForm=function(){
+    modal.classList.add('kform-open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  };
+  window.closeApplicationForm=function(){
+    modal.classList.remove('kform-open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  };
+  document.addEventListener('click',function(e){
+    if(e.target.closest('[data-kform-close]'))window.closeApplicationForm();
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape')window.closeApplicationForm();
+  });
+})();
+</script>
 
 <script>
 function getCart(){try{return JSON.parse(localStorage.getItem('kontur_cart')||'[]')}catch(e){return[]}}
@@ -126,5 +192,12 @@ function showToast(msg){
 }
 updateBadge();
 window.addEventListener('storage',function(e){if(e.key==='kontur_cart')updateBadge()});
+(function(){
+  var burger=document.getElementById('hdr-burger'),nav=document.getElementById('hdr-nav-mob');
+  if(burger&&nav){
+    burger.addEventListener('click',function(){nav.classList.toggle('open')});
+    nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){nav.classList.remove('open')})});
+  }
+})();
 </script>
 </body></html>
