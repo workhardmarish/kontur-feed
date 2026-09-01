@@ -405,6 +405,12 @@ def build_index(products, updated):
         url = f"/kontur-feed/{p['slug']}/"
         price_html = f"<span class='old-price'>{fmt(p['oldPrice'])}</span> " if p['oldPrice'] > 0 else ''
         price_html += f"{fmt(p['price'])}"
+        pid_p = int(p['id'])
+        is_mgr_p = pid_p in MANAGER_ONLY
+        if is_mgr_p:
+            btn_html = '<button class="btn-cart-sm" onclick="event.preventDefault();openApplicationForm()">Оставить заявку</button>'
+        else:
+            btn_html = f'<button class="btn-cart-sm" onclick="addToCart(\'{p["id"]}\',\'{p["name"].replace(chr(39),chr(92)+chr(39))}\',{p["price"]})">{CART_SVG} В корзину</button>'
         return f'''<div class="pcard">
   <a href="{url}" class="pcard-img"><img src="{p['img']}" alt="{p['name']}" loading="lazy"></a>
   <div class="pcard-body">
@@ -415,7 +421,7 @@ def build_index(products, updated):
       <div class="pcard-price">{price_html}</div>
       <div class="pcard-btns">
         <a href="{url}" class="btn-detail">Подробнее</a>
-        <button class="btn-cart-sm" onclick="addToCart('{p['id']}','{p['name'].replace(chr(39),chr(92)+chr(39))}',{p['price']})">{CART_SVG} В корзину</button>
+        {btn_html}
       </div>
     </div>
   </div>
